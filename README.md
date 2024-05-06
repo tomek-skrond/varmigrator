@@ -1,5 +1,12 @@
 # varmigrator
-Application for editing and viewing Github Actions secrets/variables.
+Application for editing and viewing Github Actions secrets/variables written in Go.
+
+# Building the app
+To build the app, clone the repository, then in the working directory issue a command:
+```
+$ go build
+```
+This command will output an executable `varmigrator`.
 
 # Demo
 To start using `varmigrator` export your github `personal access token` an environment variable `GITHUB_TOKEN`.<br>
@@ -19,7 +26,7 @@ Your input: s1
 ```
 In this case, we enter `s1`. This means that we edit first secret in the list - `FINGER`. If you want to edit a regular variable `GINGER` - enter `v1`.
 
-To only view all variables without editing, we can use `-print` option, also we can modify output with additional flags. Example below:
+To only view all variables/secrets without editing, we can use `-print` option, also we can modify output with additional flags. Example below:
 ```
 $  ./varmigrator -repo microservice-infra \
                  -username tomek-skrond \
