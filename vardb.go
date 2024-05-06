@@ -73,7 +73,7 @@ type PublicKeyResponse struct {
 }
 
 func (v *VarDB) GetRepoPublicKey() (string, string, error) {
-	fmt.Println(v.repo_data.Username, v.repo_data.Repo)
+	// fmt.Println(v.repo_data.Username, v.repo_data.Repo)
 	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/actions/secrets/public-key", v.repo_data.Username, v.repo_data.Repo)
 
 	client, req, err := v.BuildGithubApiCall("GET", url)
@@ -93,7 +93,7 @@ func (v *VarDB) GetRepoPublicKey() (string, string, error) {
 	// }
 	// log.Printf("Error decoding response body: %s\nResponse body: %s", "", responseBody)
 
-	fmt.Println(resp.StatusCode)
+	// fmt.Println(resp.StatusCode)
 	// Check response status code
 	if resp.StatusCode != http.StatusOK {
 		return "", "", fmt.Errorf("error: %s", resp.Status)
@@ -110,7 +110,7 @@ func (v *VarDB) GetRepoPublicKey() (string, string, error) {
 		return "", "", fmt.Errorf("error decoding response body: %s", err)
 	}
 
-	fmt.Println(publicKeyResp.PublicKey)
+	// fmt.Println(publicKeyResp.PublicKey)
 	// Return the public key
 	return publicKeyResp.PublicKey, publicKeyResp.KeyID, nil
 }
@@ -195,20 +195,114 @@ func (v *VarDB) GetSecrets() error {
 	return nil
 }
 
-func (v *VarDB) PrintAll() {
-	fmt.Println("All available project secrets: ")
-	for i, variable := range v.vars {
-		fmt.Printf("%d. %s (current: %s)\n", i+1, variable.Name, variable.Value)
-	}
-	fmt.Println("")
+func (v *VarDB) PrintVarsNormal() {
 
-	fmt.Println("All available project variables: ")
+	if VARSONLY {
+		v.VarsOnlyNormal()
+	}
+	if SECRETSONLY {
+		v.SecretsOnlyNormal()
+	}
+	if !SECRETSONLY && !VARSONLY {
+		v.VarsOnlyNormal()
+		v.SecretsOnlyNormal()
+
+	}
+}
+
+func (v *VarDB) SecretsOnlyNormal() {
+	if !CONCISE {
+		fmt.Println("All available project secrets: ")
+	}
 	for i, secret := range v.secrets {
-		fmt.Printf("%d. %s\n", i+1, secret.Name)
+		if VERBOSE {
+			fmt.Printf("%d. %s (updated at: %s)\n", i+1, secret.Name, secret.UpdatedAt)
+		} else {
+			fmt.Printf("%d. %s\n", i+1, secret.Name)
+		}
 	}
 	fmt.Println("")
 }
 
+func (v *VarDB) VarsOnlyNormal() {
+	if !CONCISE {
+		fmt.Println("All available project variables: ")
+	}
+	for i, variable := range v.vars {
+		if VERBOSE {
+			fmt.Printf("%d. %s (current value: %s, updated at: %s)\n", i+1, variable.Name, variable.Value, variable.UpdatedAt)
+		} else {
+			fmt.Printf("%d. %s (current value: %s)\n", i+1, variable.Name, variable.Value)
+		}
+	}
+	fmt.Println("")
+}
+
+func (v *VarDB) PrintVarsJSON() {
+
+	if VARSONLY {
+		v.VarsOnlyJSON()
+	}
+	if SECRETSONLY {
+		v.SecretsOnlyJSON()
+	}
+	if !SECRETSONLY && !VARSONLY {
+		v.VarsOnlyJSON()
+		v.SecretsOnlyJSON()
+	}
+}
+
+func (v *VarDB) VarsOnlyJSON() {
+	if !CONCISE {
+		fmt.Println("All available project variables: ")
+	}
+	jsonVars, err := MarshalVars(v.vars, PRETTY)
+	if err != nil {
+		log.Fatalln("error parsing vars")
+	}
+	fmt.Println(string(jsonVars))
+	fmt.Println("")
+}
+
+func (v *VarDB) SecretsOnlyJSON() {
+	if !CONCISE {
+		fmt.Println("All available project secrets: ")
+	}
+	jsonSecrets, err := MarshalVars(v.secrets, PRETTY)
+	if err != nil {
+		log.Fatalln("error parsing secrets")
+	}
+	fmt.Println(string(jsonSecrets))
+
+	fmt.Println("")
+}
+
+func (v *VarDB) PrintAll() {
+	if PRINTMODE == "normal" {
+		v.PrintVarsNormal()
+	}
+	if PRINTMODE == "json" {
+		v.PrintVarsJSON()
+	}
+}
+
+func MarshalVars(v any, isPretty bool) ([]byte, error) {
+	if isPretty {
+		jsonValue, err := json.MarshalIndent(v, "", "  ")
+		if err != nil {
+			return []byte(""), err
+		}
+
+		return jsonValue, nil
+	}
+
+	jsonValue, err := json.Marshal(v)
+	if err != nil {
+		return []byte(""), err
+	}
+
+	return jsonValue, nil
+}
 func (v *VarDB) DetermineVariableToEdit(userInput string) error {
 	pattern := `^(v|s)(\d+)$`
 	re := regexp.MustCompile(pattern)

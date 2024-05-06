@@ -8,6 +8,16 @@ import (
 	"os"
 )
 
+var (
+	VERBOSE     = false
+	PRINT       = false
+	PRINTMODE   = "normal"
+	PRETTY      = false
+	CONCISE     = false
+	VARSONLY    = false
+	SECRETSONLY = false
+)
+
 func EditSecretMessages() {
 	fmt.Print("Enter new value for secret: ")
 }
@@ -48,6 +58,14 @@ func GetInput(messages func()) string {
 func parseArgs() (*RepoData, error) {
 
 	help := flag.Bool("help", false, "Print usage information")
+	verbose := flag.Bool("verbose", false, "Verbose mode")
+	print := flag.Bool("print", false, "Print-only mode")
+	printmode := flag.String("mode", "normal", "Print mode (normal/json)")
+	concise := flag.Bool("concise", false, "Only print data")
+	pretty := flag.Bool("pretty", false, "Pretty-print json")
+	varsOnly := flag.Bool("vars-only", false, "Print only repository variables")
+	secretsOnly := flag.Bool("secrets-only", false, "Print only repository variables")
+
 	repo_name := flag.String("repo", "", "GitHub Repo name")
 	owner_username := flag.String("username", "", "GitHub Repo owner")
 	flag.Parse()
@@ -56,6 +74,30 @@ func parseArgs() (*RepoData, error) {
 		printUsage()
 		os.Exit(0)
 	}
+
+	if *verbose {
+		VERBOSE = true
+	}
+
+	if *print {
+		PRINT = true
+	}
+
+	if *pretty {
+		PRETTY = true
+	}
+
+	if *concise {
+		CONCISE = true
+	}
+	if *varsOnly {
+		VARSONLY = true
+	}
+	if *secretsOnly {
+		SECRETSONLY = true
+	}
+
+	PRINTMODE = *printmode
 
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {

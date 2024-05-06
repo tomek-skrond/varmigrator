@@ -22,6 +22,10 @@ func main() {
 		if err := db.GetVars(); err != nil {
 			log.Println(err)
 		}
+		if PRINT {
+			db.PrintAll()
+			break
+		}
 		db.PrintAll()
 
 		osInput := GetInput(ChoiceMessages)
