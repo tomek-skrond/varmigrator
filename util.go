@@ -74,19 +74,15 @@ func parseArgs() (*RepoData, error) {
 		printUsage()
 		os.Exit(0)
 	}
-
 	if *verbose {
 		VERBOSE = true
 	}
-
 	if *print {
 		PRINT = true
 	}
-
 	if *pretty {
 		PRETTY = true
 	}
-
 	if *concise {
 		CONCISE = true
 	}
@@ -104,7 +100,6 @@ func parseArgs() (*RepoData, error) {
 		log.Println()
 		return nil, fmt.Errorf("no token provided")
 	}
-
 	if *owner_username == "" {
 		// log.Println("No repo username provided")
 		return nil, fmt.Errorf("no repo username provided")
