@@ -206,7 +206,20 @@ func (v *VarDB) PrintVarsNormal() {
 	if !SECRETSONLY && !VARSONLY {
 		v.VarsOnlyNormal()
 		v.SecretsOnlyNormal()
+	}
+}
 
+func (v *VarDB) PrintVarsJSON() {
+
+	if VARSONLY {
+		v.VarsOnlyJSON()
+	}
+	if SECRETSONLY {
+		v.SecretsOnlyJSON()
+	}
+	if !SECRETSONLY && !VARSONLY {
+		v.VarsOnlyJSON()
+		v.SecretsOnlyJSON()
 	}
 }
 
@@ -236,20 +249,6 @@ func (v *VarDB) VarsOnlyNormal() {
 		}
 	}
 	fmt.Println("")
-}
-
-func (v *VarDB) PrintVarsJSON() {
-
-	if VARSONLY {
-		v.VarsOnlyJSON()
-	}
-	if SECRETSONLY {
-		v.SecretsOnlyJSON()
-	}
-	if !SECRETSONLY && !VARSONLY {
-		v.VarsOnlyJSON()
-		v.SecretsOnlyJSON()
-	}
 }
 
 func (v *VarDB) VarsOnlyJSON() {

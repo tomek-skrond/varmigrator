@@ -30,7 +30,7 @@ func ChoiceMessages() {
 	fmt.Print("Your input: ")
 }
 func printUsage() {
-	fmt.Println("Repomigrate - tool for editing Github Repository Secrets/Variables")
+	fmt.Println("Varmigrate - tool for editing Github Repository Secrets/Variables")
 	fmt.Println("Options:")
 	flag.PrintDefaults()
 }
@@ -64,7 +64,7 @@ func parseArgs() (*RepoData, error) {
 	concise := flag.Bool("concise", false, "Only print data")
 	pretty := flag.Bool("pretty", false, "Pretty-print json")
 	varsOnly := flag.Bool("vars-only", false, "Print only repository variables")
-	secretsOnly := flag.Bool("secrets-only", false, "Print only repository variables")
+	secretsOnly := flag.Bool("secrets-only", false, "Print only repository secrets")
 
 	repo_name := flag.String("repo", "", "GitHub Repo name")
 	owner_username := flag.String("username", "", "GitHub Repo owner")
